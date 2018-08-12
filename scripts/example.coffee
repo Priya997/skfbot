@@ -3,12 +3,14 @@ GITTER_PREFIX = 'GITTER'
 CONTEXT = {}
 
 module.exports = (robot) ->
-    robot.hear /@skfchatbot (.*)/i, (res) ->
+    robot.hear /@pinka (.*)/i, (res) ->
         ## Get the input from the user
         ques = res.match[1];
         ##fetching the gitter user id
         user_id = res.message.user.id
         user_name = res.message.user.name
+        #username=res.message.user.id
+        #console.log(res.message.user)
         #console.log("UserID", user_id)
         msg_time=new Date().toLocaleTimeString()
         
@@ -39,11 +41,14 @@ sol = (res, robot, ques, user_id, user_name, msg_time)->
                 ##if we have a single item in the list
                 if result[0].length>80
                     delete CONTEXT["#{GITTER_PREFIX}"+ user_id];
-                    res.send "@#{user_name} #{msg_time} #{result}";
+                    res.send "@#{user_name} #{result} (#{msg_time}) ";
                 ##multiple item in the list
+                else if result[0]=="Please be more specific"
+                    delete CONTEXT["#{GITTER_PREFIX}"+ user_id];
+                    res.send "@#{user_name} #{result} (#{msg_time})";
                 else
                     for i,value in result
                         ##setting up the context
                         CONTEXT["#{GITTER_PREFIX}" +user_id] = result
                         #console.log(CONTEXT["#{GITTER_PREFIX}" +user_id]);
-                        res.send "@#{user_name}  #{msg_time}+ #{value}"+" "+"#{i}";
+                        res.send "@#{user_name} #{value}"+" "+"#{i}  (#{msg_time})";
